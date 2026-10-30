@@ -3,7 +3,7 @@ export default {
   async scheduled(controller, env, ctx) {
     if (!env.DB) throw new Error("D1 binding DB is missing");
     const { results = [] } = await env.DB.prepare(
-      "SELECT id, plan_name, price_sar, discord_username, email, created_at FROM orders WHERE status='pending' AND payment_method='paypal' AND paypal_order_id IS NOT NULL AND datetime(created_at) <= datetime('now','-10 minutes') ORDER BY created_at ASC LIMIT 100"
+      "SELECT id, plan_name, price_sar, duration_days, discord_username, email, created_at FROM orders WHERE status='pending' AND payment_method='paypal' AND paypal_order_id IS NOT NULL AND datetime(created_at) <= datetime('now','-10 minutes') ORDER BY created_at ASC LIMIT 100"
     ).all();
     for (const order of results) {
       const now = new Date().toISOString();
