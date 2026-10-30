@@ -1,4 +1,5 @@
 import {sendOrderStatusEmail} from "../functions/_lib/status-email.js";
+import {displayOrderId} from "../functions/_lib/order-id.js";
 export default {
   async scheduled(controller, env, ctx) {
     if (!env.DB) throw new Error("D1 binding DB is missing");
@@ -29,7 +30,7 @@ export default {
               title: "إلغاء طلب PayPal تلقائيًا — NEXORA",
               color: 15158332,
               fields: [
-                { name: "رقم الطلب", value: order.id },
+                { name: "رقم الطلب", value: displayOrderId(order.id) },
                 { name: "طريقة الدفع", value: "PayPal", inline: true },
                 { name: "السبب", value: "لم يكتمل الدفع خلال 10 دقائق", inline: true },
                 { name: "الباقة", value: order.plan_name },
