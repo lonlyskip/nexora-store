@@ -6,12 +6,12 @@
 <title>NEXORA | AZ TOOL</title><link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<header class="top"><a class="brand" href="#"><span class="brand-mark">N</span><span>NEXORA<small>AZ TOOL STORE</small></span></a><a class="admin-link" href="/admin.html">لوحة الإدارة ↗</a></header>
+<header class="top"><a class="brand" href="#"><span class="brand-mark">N</span><span>NEXORA<small>AZ TOOL STORE</small></span></a></header>
 <main>
 <section class="hero"><div class="eyebrow"><span class="dot"></span> متجر NEXORA الرسمي</div><h1>تحكّم بتجربتك.<br><em>اختر اشتراكك.</em></h1><p>اشترك في AZ TOOL واختر الباقة المناسبة لك. تتم مراجعة الطلب يدويًا قبل تسليم الترخيص.</p><div class="hero-tags"><span>● تسليم يدوي بعد التحقق</span><span>● دعم عبر Discord</span></div></section>
 <section class="products"><div class="section-heading"><div><span class="eyebrow">الباقات</span><h2>اختر خطتك</h2></div><span class="muted">الأسعار بالريال السعودي</span></div><div id="plans" class="plan-grid"></div></section>
 <section class="features"><article><span class="feature-icon">◈</span><h3>RADAR</h3><p>تنبيه عند رصد إشعارات Spawned، مع مسح الشاشة. الميزة مخصصة لخريطة Go Up for Brainrot ولا نضمن اكتشاف كل الحالات.</p></article><article><span class="feature-icon">↻</span><h3>AFK</h3><p>المساعدة في إبقاء الجلسة نشطة ومحاولة إعادة الاتصال عند الانقطاع حيثما كان ذلك مدعومًا. النتيجة تعتمد على الشبكة والخادم.</p></article><article><span class="feature-icon">✓</span><h3>ضمان مدة الاشتراك</h3><p>مدة الاشتراك حسب الباقة المختارة. العبث بملفات التطبيق أو نظام الحماية أو مشاركة الملفات قد يؤدي إلى إلغاء الاشتراك وفق الشروط.</p></article></section>
-<section class="terms"><h2>قبل الطلب</h2><p>لا تشارك ملفات التطبيق. قد تتأثر بعض الميزات بتحديثات اللعبة أو الاتصال. إرسال الطلب لا يعني إتمام الدفع أو إصدار الترخيص تلقائيًا؛ يتم التأكد من الدفع ثم التسليم يدويًا.</p></section>
+
 <footer><span>© <span id="year"></span> NEXORA</span><span>متجر AZ TOOL</span></footer>
 </main>
 <dialog id="checkout"><form id="order-form"><button type="button" class="close" id="close-modal" aria-label="إغلاق">×</button><span class="eyebrow">إتمام الطلب</span><h2 id="chosen-name">الباقة</h2><p id="chosen-price" class="price-line"></p><input type="hidden" id="plan-id" name="planId"><label for="discord">اسم مستخدم Discord <b>*</b></label><input id="discord" name="discord" required maxlength="80" placeholder="مثال: username أو username#0000"><label for="email">البريد الإلكتروني (اختياري)</label><input id="email" name="email" type="email" maxlength="160" placeholder="you@example.com"><p class="fineprint">سيتم التواصل معك عبر Discord بعد مراجعة الطلب. الدفع الإلكتروني غير متاح حاليًا، ولا تدخل معلومات بطاقتك هنا.</p><button class="primary wide" type="submit" id="submit-order">إرسال الطلب</button><p id="form-status" role="status" class="status"></p></form></dialog>
