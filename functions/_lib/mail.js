@@ -41,8 +41,14 @@ export async function sendStoreMail(env, {to, subject, html, pdfHtml, pdfName}) 
   }
 
   if (!result.ok) {
-    console.error("NEXORA mailer rejected the request", response.status, result.error || "No error detail");
-    throw Object.assign(new Error("خدمة البريد رفضت الطلب"), {code:"MAILER_REJECTED", detail:String(result.error||"").slice(0,120)});
+    const detail = String(result.error || "No error detail")
+      .replace(/[\\r\\n\\t]+/g, " ")
+      .slice(0, 120);
+    console.error("NEXORA mailer rejected the request", response.status, detail);
+    throw Object.assign(
+      new Error(detail === "No error detail" ? "خدمة البريد رفضت الطلب دون توضيح" : "خدمة البريد رفضت الطلب: " + detail),
+      {code:"MAILER_REJECTED", detail}
+    );
   }
 
   return true;
