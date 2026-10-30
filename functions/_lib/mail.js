@@ -70,7 +70,7 @@ export function invoiceHtml(order, {background = true} = {}) {
   <body style="margin:0;padding:32px 14px;background:#090909;font-family:Arial,sans-serif;color:#fff">
   <main style="position:relative;max-width:760px;margin:0 auto;border:1px solid #9d2638;border-radius:22px;overflow:hidden;background-color:#100b0d;box-shadow:0 20px 70px #0009">
 
-  ${background ? `<img src="${image}" alt="" aria-hidden="true" style="position:absolute;inset:3%;width:94%;height:94%;object-fit:contain;object-position:center center;opacity:.42;z-index:0">` : ""}
+  ${background ? `<img src="${image}" alt="" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;opacity:.42;z-index:0">` : ""}
   <header style="position:relative;z-index:1;padding:30px;text-align:center;background:linear-gradient(120deg,rgba(24,9,13,.78),rgba(58,16,26,.72));border-bottom:1px solid #8d2635">
   <img src="${image}" alt="NEXORA" style="width:54px;height:54px;object-fit:contain;padding:3px;background:#151015;border-radius:13px;border:1px solid #d44b5a;box-shadow:0 8px 28px #0008">
   <div style="font-size:28px;letter-spacing:5px;font-weight:800;margin-top:12px">NEXORA</div><div style="font-size:10px;letter-spacing:4px;color:#e6a3aa;margin-top:4px">AZ TOOL STORE</div></header>
