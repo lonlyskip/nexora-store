@@ -1,0 +1,11 @@
+name = "nexora-paypal-expiry"
+main = "workers/paypal-expiry.js"
+compatibility_date = "2026-10-29"
+
+[triggers]
+crons = ["* * * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nexora-orders"
+database_id = "086b64a9-19c7-4b98-b93e-7c1f9f4a753f"
