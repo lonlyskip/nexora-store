@@ -4,7 +4,7 @@ export async function sendStoreMail(env, {to, subject, html, pdfHtml, pdfName}) 
       hasMailerUrl: Boolean(env.MAILER_URL),
       hasMailerSecret: Boolean(env.MAILER_SECRET)
     });
-    throw new Error("خدمة البريد غير مهيأة");
+    throw Object.assign(new Error("خدمة البريد غير مهيأة"), {code:"MAILER_CONFIG_MISSING"});
   }
 
   let response;
@@ -23,13 +23,13 @@ export async function sendStoreMail(env, {to, subject, html, pdfHtml, pdfName}) 
     });
   } catch (error) {
     console.error("NEXORA mailer connection failed", error?.name || "Error", error?.message || "Unknown error");
-    throw new Error("تعذر الاتصال بخدمة البريد");
+    throw Object.assign(new Error("تعذر الاتصال بخدمة البريد"), {code:"MAILER_CONNECTION_FAILED"});
   }
 
   const responseText = await response.text();
   if (!response.ok) {
     console.error("NEXORA mailer HTTP response", response.status, responseText.slice(0, 300));
-    throw new Error("خدمة البريد أعادت استجابة غير ناجحة");
+    throw Object.assign(new Error("خدمة البريد أعادت استجابة غير ناجحة"), {code:"MAILER_HTTP_ERROR", status:response.status});
   }
 
   let result;
@@ -37,12 +37,12 @@ export async function sendStoreMail(env, {to, subject, html, pdfHtml, pdfName}) 
     result = JSON.parse(responseText);
   } catch {
     console.error("NEXORA mailer returned invalid JSON", response.status, responseText.slice(0, 300));
-    throw new Error("استجابة خدمة البريد غير صالحة");
+    throw Object.assign(new Error("استجابة خدمة البريد غير صالحة"), {code:"MAILER_INVALID_RESPONSE"});
   }
 
   if (!result.ok) {
     console.error("NEXORA mailer rejected the request", response.status, result.error || "No error detail");
-    throw new Error("خدمة البريد رفضت الطلب");
+    throw Object.assign(new Error("خدمة البريد رفضت الطلب"), {code:"MAILER_REJECTED", detail:String(result.error||"").slice(0,120)});
   }
 
   return true;
