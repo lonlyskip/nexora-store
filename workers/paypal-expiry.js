@@ -8,7 +8,7 @@ export default {
       const now = new Date().toISOString();
       const result = await env.DB.batch([
         env.DB.prepare("UPDATE orders SET status='cancelled' WHERE id=? AND status='pending' AND payment_method='paypal'").bind(order.id),
-        env.DB.prepare("INSERT INTO order_status_events(id,order_id,status,message,created_at) SELECT ?,?,'cancelled',?,? WHERE EXISTS (SELECT 1 FROM orders WHERE id=? AND status='cancelled')").bind(crypto.randomUUID(), order.id, "انتهت مهلة الدفع عبر PayPal (10 دقائق) وتم إلغاء الطلب تلقائيًا. يمكنك إنشاء طلب جديد.", now, order.id)
+        env.DB.prepare("INSERT INTO order_status_events(id,order_id,status,message,created_at) SELECT ?,?,'cancelled',?,? WHERE changes() > 0").bind(crypto.randomUUID(), order.id, "انتهت مهلة الدفع عبر PayPal (10 دقائق) وتم إلغاء الطلب تلقائيًا. يمكنك إنشاء طلب جديد.", now, order.id)
       ]);
       if (!(result[0]?.meta?.changes > 0)) continue;
       if (env.DISCORD_WEBHOOK) {
