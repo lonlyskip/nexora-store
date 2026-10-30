@@ -1,3 +1,4 @@
+import {sendOrderStatusEmail} from "../functions/_lib/status-email.js";
 export default {
   async scheduled(controller, env, ctx) {
     if (!env.DB) throw new Error("D1 binding DB is missing");
@@ -6,16 +7,19 @@ export default {
     ).all();
     for (const order of results) {
       const now = new Date().toISOString();
+      const eventId = crypto.randomUUID();
+      const eventMessage = "انتهت مهلة الدفع عبر PayPal (10 دقائق) وتم إلغاء الطلب تلقائيًا. يمكنك إنشاء طلب جديد.";
       const result = await env.DB.batch([
         env.DB.prepare("UPDATE orders SET status='cancelled' WHERE id=? AND status='pending' AND payment_method='paypal'").bind(order.id),
         env.DB.prepare("INSERT INTO order_status_events(id,order_id,status,message,created_at) SELECT ?,?,'cancelled',?,? WHERE changes() > 0").bind(
-          crypto.randomUUID(),
+          eventId,
           order.id,
-          "انتهت مهلة الدفع عبر PayPal (10 دقائق) وتم إلغاء الطلب تلقائيًا. يمكنك إنشاء طلب جديد.",
+          eventMessage,
           now
         )
       ]);
       if (!(result[0]?.meta?.changes > 0)) continue;
+      await sendOrderStatusEmail(env, {...order,status:"cancelled",duration_days:0}, "cancelled", {id:eventId,status:"cancelled",message:eventMessage,created_at:now});
       if (env.DISCORD_WEBHOOK) {
         try {
           await fetch(env.DISCORD_WEBHOOK, {
