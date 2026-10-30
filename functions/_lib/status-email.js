@@ -3,12 +3,17 @@ import {sendStoreMail,invoiceHtml} from "./mail.js";
 export async function sendOrderStatusEmail(env, order, status, event) {
   if (!order?.email) return {queued:false, skipped:true};
   const now=new Date().toISOString();
-  await env.DB.prepare("INSERT INTO order_status_email_jobs(order_id,status,event_id,attempts,created_at) VALUES(?,?,?,?,?) ON CONFLICT(order_id,status) DO NOTHING")
-    .bind(order.id,status,event.id,0,now).run();
-  const claim=await env.DB.prepare("UPDATE order_status_email_jobs SET delivery_status='sending' WHERE order_id=? AND status=? AND delivery_status IN ('queued','failed') AND attempts<5").bind(order.id,status).run();
-  if (!(claim.meta?.changes>0)) {
-    const job=await env.DB.prepare("SELECT delivery_status FROM order_status_email_jobs WHERE order_id=? AND status=?").bind(order.id,status).first();
-    return {queued:true,alreadySent:job?.delivery_status==="sent",busy:job?.delivery_status==="sending"};
+  try {
+    await env.DB.prepare("INSERT INTO order_status_email_jobs(order_id,status,event_id,attempts,created_at) VALUES(?,?,?,?,?) ON CONFLICT(order_id,status) DO NOTHING")
+      .bind(order.id,status,event.id,0,now).run();
+    const claim=await env.DB.prepare("UPDATE order_status_email_jobs SET delivery_status='sending' WHERE order_id=? AND status=? AND delivery_status IN ('queued','failed') AND attempts<5").bind(order.id,status).run();
+    if (!(claim.meta?.changes>0)) {
+      const job=await env.DB.prepare("SELECT delivery_status FROM order_status_email_jobs WHERE order_id=? AND status=?").bind(order.id,status).first();
+      return {queued:true,alreadySent:job?.delivery_status==="sent",busy:job?.delivery_status==="sending"};
+    }
+  } catch(error) {
+    console.error("NEXORA status email queue unavailable",order.id,status,error?.message||"Unknown error");
+    return {queued:false,sent:false};
   }
   try {
     const customer=await env.DB.prepare("SELECT first_name FROM customers WHERE lower(email)=lower(?)").bind(order.email).first();
