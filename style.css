@@ -95,3 +95,9 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
 .discord-button svg{width:19px;height:19px;flex:0 0 19px}
 .discord-button:hover{background:#4752c4;transform:translateY(-1px);box-shadow:0 7px 22px #5865f255}
 @media(max-width:480px){.discord-button{min-height:36px;padding:7px 9px;gap:5px;font-size:10px}.discord-button svg{width:16px;height:16px;flex-basis:16px}}
+
+/* Place Discord community CTA beneath the hero content */
+.hero-community{display:flex;justify-content:flex-start;margin-top:25px}
+.hero-community .discord-button{min-height:44px;padding:10px 19px;border-radius:11px;font-size:13px;gap:10px}
+.hero-community .discord-button svg{width:21px;height:21px;flex-basis:21px}
+@media(max-width:480px){.hero-community{margin-top:20px}.hero-community .discord-button{min-height:42px;padding:9px 16px}}
