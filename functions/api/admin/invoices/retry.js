@@ -1,3 +1,4 @@
+import {sendOrderStatusEmail} from "../../../_lib/status-email.js";
 import {sendStoreMail,invoiceHtml} from "../../../_lib/mail.js";
 const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{"content-type":"application/json; charset=utf-8","cache-control":"no-store"}});
 function authorized(request,env){const token=request.headers.get("authorization")||"";return !!env.ADMIN_PASSWORD&&token==="Bearer "+env.ADMIN_PASSWORD}
@@ -25,6 +26,14 @@ export async function onRequestPost({request,env}){
         summary.failed++;summary.details.push({orderId:row.order_id,status:"failed",error:detail});
       }
     }
-    return json({ok:true,...summary,message:"تمت مراجعة الفواتير غير المرسلة ومحاولة إعادة إرسالها."});
+    const {results:statusJobs=[]}=await env.DB.prepare("SELECT j.order_id,j.status AS email_status,j.event_id,o.email,o.plan_name,o.price_sar,o.duration_days,o.created_at,o.status AS order_status FROM order_status_email_jobs j JOIN orders o ON o.id=j.order_id WHERE j.status IN ('queued','failed') AND j.attempts<5 ORDER BY j.created_at ASC LIMIT 50").all();
+    summary.statusEmailsFound=statusJobs.length;summary.statusEmailsSent=0;summary.statusEmailsFailed=0;
+    for(const job of statusJobs){
+      const event=await env.DB.prepare("SELECT id,status,message,created_at FROM order_status_events WHERE id=? AND order_id=?").bind(job.event_id,job.order_id).first();
+      if(!event)continue;
+      const result=await sendOrderStatusEmail(env,{id:job.order_id,email:job.email,plan_name:job.plan_name,price_sar:job.price_sar,duration_days:job.duration_days,created_at:job.created_at},event.status,event);
+      if(result.sent)summary.statusEmailsSent++;else if(!result.alreadySent)summary.statusEmailsFailed++;
+    }
+    return json({ok:true,...summary,message:"تمت مراجعة الفواتير وتحديثات الحالات غير المرسلة ومحاولة إعادة إرسالها."});
   }catch(error){console.error("NEXORA invoice retry scan failed",error?.message||"Unknown error");return json({error:"تعذر فحص الفواتير. تأكد من تطبيق تحديث قاعدة البيانات."},500)}
 }
