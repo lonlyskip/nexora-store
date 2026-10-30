@@ -60,7 +60,7 @@ export function invoiceHtml(order) {
   const image = "https://nexora-store-z31.pages.dev/IMG_4552.jpg";
   return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NEXORA Invoice</title></head>
   <body style="margin:0;padding:32px 14px;background:#090909;font-family:Arial,sans-serif;color:#fff">
-  <main style="max-width:660px;margin:0 auto;border:1px solid #9d2638;border-radius:22px;overflow:hidden;background:linear-gradient(145deg,rgba(8,8,10,.94),rgba(28,8,13,.92));box-shadow:0 20px 70px #0009">
+  <main style="max-width:660px;margin:0 auto;border:1px solid #9d2638;border-radius:22px;overflow:hidden;background-color:#100b0d;background-image:linear-gradient(145deg,rgba(8,8,10,.88),rgba(28,8,13,.92)),url("${image}");background-size:100% auto;background-position:center top;background-repeat:repeat-y;box-shadow:0 20px 70px #0009">
   <header style="padding:30px;text-align:center;background:linear-gradient(120deg,#18090d,#3a101a);border-bottom:1px solid #8d2635">
   <img src="${image}" alt="NEXORA" style="width:54px;height:54px;object-fit:contain;padding:3px;background:#151015;border-radius:13px;border:1px solid #d44b5a;box-shadow:0 8px 28px #0008">
   <div style="font-size:28px;letter-spacing:5px;font-weight:800;margin-top:12px">NEXORA</div><div style="font-size:10px;letter-spacing:4px;color:#e6a3aa;margin-top:4px">AZ TOOL STORE</div></header>
