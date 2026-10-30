@@ -21,7 +21,7 @@ options='<option value="delivered" selected disabled>تم التسليم</option
 }else{
 options='<option value="cancelled" selected disabled>ملغي</option>';
 }
-return '<div class="admin-row"><div><b>'+esc(o.id)+'</b><div>'+esc(o.discord_username)+'</div><div class="muted2">'+esc(o.email||"")+'</div></div><div>'+esc(o.plan_name)+'<br>'+esc(o.price_sar)+' ر.س</div><div><b>'+payment+'</b></div><div>'+esc(new Date(o.created_at).toLocaleString("ar-SA"))+'</div><select data-id="'+esc(o.id)+'">'+options+'</select></div>';
+return '<div class="admin-row"><div><b>'+esc(displayOrderId(o.id))+'</b><div>'+esc(o.discord_username)+'</div><div class="muted2">'+esc(o.email||"")+'</div></div><div>'+esc(o.plan_name)+'<br>'+esc(o.price_sar)+' ر.س</div><div><b>'+payment+'</b></div><div>'+esc(new Date(o.created_at).toLocaleString("ar-SA"))+'</div><select data-id="'+esc(o.id)+'">'+options+'</select></div>';
 }).join("");
 root.querySelectorAll("select").forEach(s=>s.addEventListener("change",async()=>{
 s.disabled=true;
@@ -36,5 +36,6 @@ s.disabled=false;
 }
 }));
 }
+function displayOrderId(value){const raw=String(value||"").replace(/^NX-/i,"").replace(/[^a-f0-9]/gi,"").toUpperCase();return raw?"NEXORA-"+raw.slice(0,6).padEnd(6,"0"):"NEXORA-000000"}
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 </script></body></html>
