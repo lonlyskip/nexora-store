@@ -51,3 +51,15 @@ document.addEventListener('copy', event => {
   });
   if (touchesProtectedArea) event.preventDefault();
 });
+
+
+// Global copy policy: only text entered in editable fields may be copied.
+// Pasting into fields remains available; this does not block normal typing.
+document.addEventListener('copy', event => {
+  const active = document.activeElement;
+  const isEditableField = active && (
+    active.matches('input:not([type="button"]):not([type="submit"]):not([type="reset"]), textarea') ||
+    active.isContentEditable
+  );
+  if (!isEditableField) event.preventDefault();
+}, true);
