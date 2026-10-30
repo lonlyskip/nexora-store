@@ -63,6 +63,8 @@ export function invoiceHtml(order, {background = true} = {}) {
   const statusMessages = {pending:"تم استلام طلبك بنجاح، وطلبك الآن قيد المراجعة.",paid:"تم تحديث طلبك والتحقق من حالة الدفع.",delivered:"تم تسليم طلبك بنجاح. شكرًا لاختيارك NEXORA!",cancelled:"تم إلغاء طلبك. إذا كان لديك استفسار، تواصل مع الدعم."};
   const statusMessage = statusMessages[order.status] || statusMessages.pending;
   const eventRows = (order.events || []).map(event => `<tr><td style="padding:10px 4px;border-bottom:1px solid #ffffff18;color:#e6dadd">${escapeHtml(event.message)}</td><td style="padding:10px 4px;border-bottom:1px solid #ffffff18;text-align:left;color:#bca7ab;font-size:11px">${escapeHtml(new Date(event.created_at).toLocaleString("ar-SA"))}</td></tr>`).join("");
+  const image = "https://nexora-store-z31.pages.dev/IMG_4552.jpg";
+  const backgroundStyle = background ? `background-image:linear-gradient(145deg,rgba(8,8,10,.42),rgba(28,8,13,.58)),url("${image}");background-size:100% auto;background-position:center top;background-repeat:repeat-y;` : "";
   return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NEXORA Invoice</title></head>
   <body style="margin:0;padding:32px 14px;background:#090909;font-family:Arial,sans-serif;color:#fff">
   <main style="max-width:660px;margin:0 auto;border:1px solid #9d2638;border-radius:22px;overflow:hidden;background-color:#100b0d;${backgroundStyle}box-shadow:0 20px 70px #0009">
