@@ -15,7 +15,8 @@ export async function sendOrderStatusEmail(env, order, status, event) {
     const {results:events=[]}=await env.DB.prepare("SELECT status,message,created_at FROM order_status_events WHERE order_id=? ORDER BY created_at ASC").bind(order.id).all();
     const document=invoiceHtml({...order,status,first_name:customer?.first_name||"عميل NEXORA",events:events.length?events:[event]});
     await env.DB.prepare("UPDATE order_status_email_jobs SET attempts=attempts+1,last_attempt_at=?,last_error=NULL WHERE order_id=? AND status=? AND delivery_status='sending'").bind(now,order.id,status).run();
-    await sendStoreMail(env,{to:order.email,subject:"تحديث طلبك من NEXORA — "+status+" — "+order.id,html:document,pdfHtml:document,pdfName:order.id+"-"+status+".pdf"});
+    const statusLabel={pending:"قيد المراجعة",paid:"تم التحقق من الدفع",delivered:"تم التسليم",cancelled:"ملغي"}[status]||status;
+    await sendStoreMail(env,{to:order.email,subject:"تحديث طلبك من NEXORA — "+statusLabel+" — "+order.id,html:document,pdfHtml:document,pdfName:order.id+"-"+status+".pdf"});
     await env.DB.prepare("UPDATE order_status_email_jobs SET delivery_status='sent',sent_at=?,last_error=NULL WHERE order_id=? AND status=?").bind(new Date().toISOString(),order.id,status).run();
     return {queued:true,sent:true};
   } catch(error) {
