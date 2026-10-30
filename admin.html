@@ -13,11 +13,11 @@ const payment=o.payment_method==="bank_transfer"?"تحويل بنكي — الر
 let options="";
 if(o.status==="pending"){
 options='<option value="pending" selected disabled>'+(o.payment_method==="bank_transfer"?"بانتظار مراجعة التحويل":"بانتظار PayPal")+'</option>';
-if(o.payment_method==="bank_transfer")options+='<option value="paid">تأكيد وصول التحويل</option>';
+if(o.payment_method==="bank_transfer")options+='<option value="paid">تأكيد وصول التحويل</option>';options+='<option value="cancelled">إلغاء الطلب</option>';
 }else if(o.status==="paid"){
-options='<option value="paid" selected disabled>تم تأكيد الدفع</option><option value="delivered">تم التسليم</option>';
+options='<option value="paid" selected disabled>تم تأكيد الدفع</option><option value="delivered">تم التسليم</option><option value="cancelled">إلغاء الطلب</option>';
 }else if(o.status==="delivered"){
-options='<option value="delivered" selected disabled>تم التسليم</option>';
+options='<option value="delivered" selected disabled>تم التسليم</option><option value="cancelled">إلغاء الطلب</option>';
 }else{
 options='<option value="cancelled" selected disabled>ملغي</option>';
 }
@@ -28,7 +28,7 @@ s.disabled=true;
 try{
 const r=await fetch("/api/admin/orders",{method:"PATCH",headers:{authorization:"Bearer "+secret,"content-type":"application/json"},body:JSON.stringify({id:s.dataset.id,status:s.value})});
 const d=await r.json();
-ordersMsg.textContent=r.ok?(s.value==="paid"?"تم تأكيد التحويل وإضافة الفاتورة لقائمة الإرسال.":"تم تحديث حالة الطلب."):(d.error||"تعذر التحديث");
+ordersMsg.textContent=r.ok?(s.value==="paid"?"تم تأكيد التحويل وإرسال تحديث الحالة إلى العميل.":s.value==="cancelled"?"تم إلغاء الطلب وإرسال تحديث الحالة إلى العميل.":"تم تحديث حالة الطلب وإرسال تحديث الحالة إلى العميل."):(d.error||"تعذر التحديث");
 await load();
 }catch{
 ordersMsg.textContent="تعذر الاتصال بالخادم، حدّث القائمة وحاول مرة أخرى.";
