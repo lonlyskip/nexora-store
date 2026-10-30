@@ -7,14 +7,14 @@ export async function onRequestPost({request,env}){
   if(!env.DB)return json({error:"قاعدة البيانات غير مهيأة"},503);
   try{
     const now=new Date(),nowIso=now.toISOString(),staleBefore=new Date(now.getTime()-10*60*1000).toISOString();
-    const {results=[]}=await env.DB.prepare("SELECT j.order_id,j.status,j.attempts,o.email,o.plan_name,o.price_sar,o.duration_days,o.created_at,o.status AS order_status,c.first_name FROM invoice_email_jobs j JOIN orders o ON o.id=j.order_id LEFT JOIN customers c ON lower(c.email)=lower(o.email) WHERE o.status IN ('paid','delivered') AND j.attempts<5 AND (j.status IN ('queued','failed') OR (j.status='sending' AND j.last_attempt_at<?)) ORDER BY j.created_at ASC LIMIT 50").bind(staleBefore).all();
+    const {results=[]}=await env.DB.prepare("SELECT j.order_id,j.status,j.attempts,o.email,o.plan_name,o.price_sar,o.duration_days,o.payment_method,o.created_at,o.status AS order_status,c.first_name FROM invoice_email_jobs j JOIN orders o ON o.id=j.order_id LEFT JOIN customers c ON lower(c.email)=lower(o.email) WHERE o.status IN ('paid','delivered') AND j.attempts<5 AND (j.status IN ('queued','failed') OR (j.status='sending' AND j.last_attempt_at<?)) ORDER BY j.created_at ASC LIMIT 50").bind(staleBefore).all();
     const summary={found:results.length,sent:0,failed:0,skipped:0,details:[]};
     for(const row of results){
       const claimed=await env.DB.prepare("UPDATE invoice_email_jobs SET status='sending',attempts=attempts+1,last_attempt_at=?,last_error=NULL WHERE order_id=? AND attempts<5 AND (status IN ('queued','failed') OR (status='sending' AND last_attempt_at<?))").bind(nowIso,row.order_id,staleBefore).run();
       if(!(claimed.meta?.changes>0)){summary.skipped++;continue}
       try{
         const {results:events=[]}=await env.DB.prepare("SELECT status,message,created_at FROM order_status_events WHERE order_id=? ORDER BY created_at ASC").bind(row.order_id).all();
-        const order={id:row.order_id,first_name:row.first_name||"عميل NEXORA",plan_name:row.plan_name,price_sar:row.price_sar,duration_days:row.duration_days,status:row.order_status,created_at:row.created_at,events};
+        const order={id:row.order_id,first_name:row.first_name||"عميل NEXORA",plan_name:row.plan_name,price_sar:row.price_sar,duration_days:row.duration_days,payment_method:row.payment_method,status:row.order_status,created_at:row.created_at,events};
         const document=invoiceHtml(order);
         await sendStoreMail(env,{to:row.email,subject:"فاتورتك من NEXORA — "+row.order_id,html:document,pdfHtml:document,pdfName:row.order_id+".pdf"});
         await env.DB.prepare("UPDATE invoice_email_jobs SET status='sent',sent_at=?,last_error=NULL WHERE order_id=? AND status='sending'").bind(new Date().toISOString(),row.order_id).run();
@@ -26,12 +26,12 @@ export async function onRequestPost({request,env}){
         summary.failed++;summary.details.push({orderId:row.order_id,status:"failed",error:detail});
       }
     }
-    const {results:statusJobs=[]}=await env.DB.prepare("SELECT j.order_id,j.status AS email_status,j.event_id,o.email,o.plan_name,o.price_sar,o.duration_days,o.created_at,o.status AS order_status FROM order_status_email_jobs j JOIN orders o ON o.id=j.order_id WHERE j.delivery_status IN ('queued','failed') AND j.attempts<5 ORDER BY j.created_at ASC LIMIT 50").all();
+    const {results:statusJobs=[]}=await env.DB.prepare("SELECT j.order_id,j.status AS email_status,j.event_id,o.email,o.plan_name,o.price_sar,o.duration_days,o.payment_method,o.created_at,o.status AS order_status FROM order_status_email_jobs j JOIN orders o ON o.id=j.order_id WHERE j.delivery_status IN ('queued','failed') AND j.attempts<5 ORDER BY j.created_at ASC LIMIT 50").all();
     summary.statusEmailsFound=statusJobs.length;summary.statusEmailsSent=0;summary.statusEmailsFailed=0;
     for(const job of statusJobs){
       const event=await env.DB.prepare("SELECT id,status,message,created_at FROM order_status_events WHERE id=? AND order_id=?").bind(job.event_id,job.order_id).first();
       if(!event)continue;
-      const result=await sendOrderStatusEmail(env,{id:job.order_id,email:job.email,plan_name:job.plan_name,price_sar:job.price_sar,duration_days:job.duration_days,created_at:job.created_at},event.status,event);
+      const result=await sendOrderStatusEmail(env,{id:job.order_id,email:job.email,plan_name:job.plan_name,price_sar:job.price_sar,duration_days:job.duration_days,payment_method:job.payment_method,created_at:job.created_at},event.status,event);
       if(result.sent)summary.statusEmailsSent++;else if(!result.alreadySent)summary.statusEmailsFailed++;
     }
     return json({ok:true,...summary,message:"تمت مراجعة الفواتير وتحديثات الحالات غير المرسلة ومحاولة إعادة إرسالها."});
