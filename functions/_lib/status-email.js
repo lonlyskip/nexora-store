@@ -5,9 +5,11 @@ export async function sendOrderStatusEmail(env, order, status, event) {
   const now=new Date().toISOString();
   await env.DB.prepare("INSERT INTO order_status_email_jobs(order_id,status,event_id,attempts,created_at) VALUES(?,?,?,?,?) ON CONFLICT(order_id,status) DO NOTHING")
     .bind(order.id,status,event.id,0,now).run();
-  const job=await env.DB.prepare("SELECT status,attempts FROM order_status_email_jobs WHERE order_id=? AND status=?")
-    .bind(order.id,status).first();
-  if (!job || job.status==="sent") return {queued:true,alreadySent:true};
+  const claim=await env.DB.prepare("UPDATE order_status_email_jobs SET status='sending' WHERE order_id=? AND status=? AND status IN ('queued','failed') AND attempts<5").bind(order.id,status).run();
+  if (!(claim.meta?.changes>0)) {
+    const job=await env.DB.prepare("SELECT status FROM order_status_email_jobs WHERE order_id=? AND status=?").bind(order.id,status).first();
+    return {queued:true,alreadySent:job?.status==="sent",busy:job?.status==="sending"};
+  }
   try {
     const customer=await env.DB.prepare("SELECT first_name FROM customers WHERE lower(email)=lower(?)").bind(order.email).first();
     const {results:events=[]}=await env.DB.prepare("SELECT status,message,created_at FROM order_status_events WHERE order_id=? ORDER BY created_at ASC").bind(order.id).all();
