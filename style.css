@@ -144,3 +144,19 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
 #paypal-buttons {
   -webkit-tap-highlight-color: transparent;
 }
+
+
+/* Bank transfer checkout */
+.payment-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:#888;font-size:11px}
+.payment-divider:before,.payment-divider:after{content:"";height:1px;flex:1;background:#ffffff20}
+.bank-transfer-panel{margin-top:14px;padding:16px;border:1px solid #6f3039;border-radius:13px;background:linear-gradient(145deg,#211519,#111)}
+.bank-transfer-panel h3{margin:0 0 14px;font-size:15px}
+.bank-detail{position:relative;display:flex;flex-direction:column;gap:5px;padding:11px 10px;margin:8px 0;border:1px solid #ffffff17;border-radius:9px;background:#0c0c0c}
+.bank-detail small{font-size:10px;color:#aaa}
+.bank-detail strong{font-size:13px;overflow-wrap:anywhere}
+.bank-detail [dir="ltr"]{text-align:left;direction:ltr;padding-right:46px;font-family:monospace;letter-spacing:.3px}
+.bank-detail .copy-bank{position:absolute;left:8px;top:50%;transform:translateY(-50%);margin:0;padding:5px 8px}
+.bank-transfer-panel label{display:block;margin:16px 0 8px;font-size:12px}
+.bank-transfer-panel input[type=file]{width:100%;padding:10px;border:1px dashed #75404a;border-radius:9px;background:#0d0d0d;color:#ddd;font-size:11px}
+.bank-transfer-panel .fineprint{display:block;line-height:1.8;margin:8px 0;color:#aaa;font-size:10px}
+.bank-transfer-panel #bank-transfer-submit{margin-top:12px}
