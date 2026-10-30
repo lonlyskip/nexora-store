@@ -37,3 +37,5 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
 .empty-orders{text-align:center;border:1px dashed #444;border-radius:14px;padding:25px 15px;color:#aaa}
 .empty-orders span{display:block;font-size:28px;margin-bottom:8px}.empty-orders strong{color:#eee}.empty-orders p{font-size:12px}
 @media(max-width:480px){.order-details{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.brand-logo{display:block;width:42px;height:42px;object-fit:cover;border-radius:12px;border:1px solid #b43a49;box-shadow:0 0 24px #ed233533}
