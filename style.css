@@ -115,3 +115,14 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
 }
 #paypal-buttons { cursor: pointer; }
 #paypal-buttons iframe { cursor: pointer; }
+
+
+/* PayPal button: remove the visible focus frame around the embedded checkout */
+#paypal-buttons,
+#paypal-buttons:focus,
+#paypal-buttons:focus-within,
+#paypal-buttons *:focus,
+#paypal-buttons *:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
