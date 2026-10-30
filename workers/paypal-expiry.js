@@ -19,7 +19,7 @@ export default {
         )
       ]);
       if (!(result[0]?.meta?.changes > 0)) continue;
-      await sendOrderStatusEmail(env, {...order,status:"cancelled",duration_days:0}, "cancelled", {id:eventId,status:"cancelled",message:eventMessage,created_at:now});
+      await sendOrderStatusEmail(env, {...order,status:"cancelled"}, "cancelled", {id:eventId,status:"cancelled",message:eventMessage,created_at:now});
       if (env.DISCORD_WEBHOOK) {
         try {
           await fetch(env.DISCORD_WEBHOOK, {
