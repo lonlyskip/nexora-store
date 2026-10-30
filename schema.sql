@@ -14,6 +14,7 @@ CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 
 CREATE TABLE IF NOT EXISTS customers (
   email TEXT PRIMARY KEY,
+  first_name TEXT,
   created_at TEXT NOT NULL,
   last_login_at TEXT
 );
