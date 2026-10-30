@@ -50,3 +50,7 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
 .auth-actions .text-button{margin:0}
 #refresh-orders{margin-top:12px}
 @media(max-width:480px){.top{min-height:72px}.brand{transform:none}.brand-logo{width:38px;height:38px;min-width:38px}.top-actions{gap:6px}.auth-actions{gap:12px}}
+
+/* Exact compact logo frame */
+.brand-logo{display:block!important;width:42px!important;height:42px!important;min-width:42px!important;max-width:42px!important;max-height:42px!important;aspect-ratio:1/1;flex:0 0 42px;box-sizing:border-box;object-fit:contain!important;object-position:center;padding:0!important;margin:0!important;border:1px solid #a52d3d;border-radius:10px;background:#151015;box-shadow:0 0 18px #ed233522}
+@media(max-width:480px){.brand-logo{width:42px!important;height:42px!important;min-width:42px!important;max-width:42px!important;flex-basis:42px}}
