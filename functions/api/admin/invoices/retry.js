@@ -6,7 +6,7 @@ export async function onRequestPost({request,env}){
   if(!env.DB)return json({error:"قاعدة البيانات غير مهيأة"},503);
   try{
     const now=new Date(),nowIso=now.toISOString(),staleBefore=new Date(now.getTime()-10*60*1000).toISOString();
-    const {results=[]}=await env.DB.prepare("SELECT j.order_id,j.status,j.attempts,o.email,o.plan_name,o.price_sar,o.duration_days,o.created_at,o.status AS order_status,c.first_name FROM invoice_email_jobs j JOIN orders o ON o.id=j.order_id LEFT JOIN customers c ON lower(c.email)=lower(o.email) WHERE j.attempts<5 AND (j.status IN ('queued','failed') OR (j.status='sending' AND j.last_attempt_at<?)) ORDER BY j.created_at ASC LIMIT 50").bind(staleBefore).all();
+    const {results=[]}=await env.DB.prepare("SELECT j.order_id,j.status,j.attempts,o.email,o.plan_name,o.price_sar,o.duration_days,o.created_at,o.status AS order_status,c.first_name FROM invoice_email_jobs j JOIN orders o ON o.id=j.order_id LEFT JOIN customers c ON lower(c.email)=lower(o.email) WHERE o.status IN ('paid','delivered') AND j.attempts<5 AND (j.status IN ('queued','failed') OR (j.status='sending' AND j.last_attempt_at<?)) ORDER BY j.created_at ASC LIMIT 50").bind(staleBefore).all();
     const summary={found:results.length,sent:0,failed:0,skipped:0,details:[]};
     for(const row of results){
       const claimed=await env.DB.prepare("UPDATE invoice_email_jobs SET status='sending',attempts=attempts+1,last_attempt_at=?,last_error=NULL WHERE order_id=? AND attempts<5 AND (status IN ('queued','failed') OR (status='sending' AND last_attempt_at<?))").bind(nowIso,row.order_id,staleBefore).run();
