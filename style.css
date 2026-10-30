@@ -126,3 +126,21 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
   outline: none !important;
   box-shadow: none !important;
 }
+
+
+/* Remove the blue browser focus ring around the PayPal button area */
+#paypal-buttons,
+#paypal-buttons:focus,
+#paypal-buttons:focus-within,
+#paypal-buttons iframe,
+#paypal-buttons iframe:focus,
+#paypal-buttons button,
+#paypal-buttons button:focus,
+#paypal-buttons button:focus-visible {
+  outline: 0 !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+#paypal-buttons {
+  -webkit-tap-highlight-color: transparent;
+}
