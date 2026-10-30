@@ -26,7 +26,7 @@ export async function onRequestPost({request,env}){
         summary.failed++;summary.details.push({orderId:row.order_id,status:"failed",error:detail});
       }
     }
-    const {results:statusJobs=[]}=await env.DB.prepare("SELECT j.order_id,j.status AS email_status,j.event_id,o.email,o.plan_name,o.price_sar,o.duration_days,o.created_at,o.status AS order_status FROM order_status_email_jobs j JOIN orders o ON o.id=j.order_id WHERE j.status IN ('queued','failed') AND j.attempts<5 ORDER BY j.created_at ASC LIMIT 50").all();
+    const {results:statusJobs=[]}=await env.DB.prepare("SELECT j.order_id,j.status AS email_status,j.event_id,o.email,o.plan_name,o.price_sar,o.duration_days,o.created_at,o.status AS order_status FROM order_status_email_jobs j JOIN orders o ON o.id=j.order_id WHERE j.delivery_status IN ('queued','failed') AND j.attempts<5 ORDER BY j.created_at ASC LIMIT 50").all();
     summary.statusEmailsFound=statusJobs.length;summary.statusEmailsSent=0;summary.statusEmailsFailed=0;
     for(const job of statusJobs){
       const event=await env.DB.prepare("SELECT id,status,message,created_at FROM order_status_events WHERE id=? AND order_id=?").bind(job.event_id,job.order_id).first();
