@@ -30,3 +30,24 @@ $('#customer-logout').addEventListener('click',async()=>{await fetch('/api/custo
 
 $('#success-close').addEventListener('click',()=>$('#success-dialog').close());
 $('#success-view-orders').addEventListener('click',()=>{$('#success-dialog').close();ordersDialog.showModal();loadCustomerOrders();});
+
+
+// Prevent copying storefront essentials (plans, cart, checkout and order details).
+// Form fields remain copyable so customers can manage their own input.
+document.addEventListener('copy', event => {
+  const active = document.activeElement;
+  if (active && active.matches('input, textarea, [contenteditable="true"]')) return;
+  const selection = window.getSelection();
+  if (!selection || selection.isCollapsed) return;
+  const protectedAreas = ['#plans', '#cart-dialog', '#checkout', '#orders-dialog'];
+  const selectedNodes = [];
+  for (let i = 0; i < selection.rangeCount; i++) {
+    const range = selection.getRangeAt(i);
+    selectedNodes.push(range.startContainer, range.endContainer);
+  }
+  const touchesProtectedArea = selectedNodes.some(node => {
+    const element = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+    return element && protectedAreas.some(selector => element.closest(selector));
+  });
+  if (touchesProtectedArea) event.preventDefault();
+});
