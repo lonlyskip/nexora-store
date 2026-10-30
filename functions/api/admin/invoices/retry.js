@@ -1,4 +1,4 @@
-import {sendStoreMail,invoiceHtml} from "../../_lib/mail.js";
+import {sendStoreMail,invoiceHtml} from "../../../_lib/mail.js";
 const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{"content-type":"application/json; charset=utf-8","cache-control":"no-store"}});
 function authorized(request,env){const token=request.headers.get("authorization")||"";return !!env.ADMIN_PASSWORD&&token==="Bearer "+env.ADMIN_PASSWORD}
 export async function onRequestPost({request,env}){
