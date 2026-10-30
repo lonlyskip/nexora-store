@@ -32,6 +32,31 @@ $('#success-close').addEventListener('click',()=>$('#success-dialog').close());
 $('#success-view-orders').addEventListener('click',()=>{$('#success-dialog').close();ordersDialog.showModal();loadCustomerOrders();});
 
 
+// Block copying from all private storefront dialogs, including text selected inside form fields.
+const privateCopyAreas = ['#cart-dialog', '#checkout', '#orders-dialog', '#account-dialog', '#success-dialog'];
+const privateCopyStyle = document.createElement('style');
+privateCopyStyle.textContent = privateCopyAreas.join(',') + ' , ' + privateCopyAreas.map(s=>s+' *').join(',') + ' { -webkit-user-select: none !important; user-select: none !important; }';
+document.head.appendChild(privateCopyStyle);
+document.addEventListener('copy', event => {
+  const active = document.activeElement;
+  const selection = window.getSelection();
+  const selectedNodes = [];
+  if (selection && !selection.isCollapsed) {
+    for (let i = 0; i < selection.rangeCount; i++) {
+      const range = selection.getRangeAt(i);
+      selectedNodes.push(range.startContainer, range.endContainer);
+    }
+  }
+  const isPrivate = (node) => {
+    const element = node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
+    return !!element && privateCopyAreas.some(selector => element.closest(selector));
+  };
+  if (privateCopyAreas.some(selector => active?.closest?.(selector)) || selectedNodes.some(isPrivate)) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }
+}, true);
+
 // Prevent copying storefront essentials (plans, cart, checkout and order details).
 // Form fields remain copyable so customers can manage their own input.
 document.addEventListener('copy', event => {
