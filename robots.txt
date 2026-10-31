@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nexora-store-z31.pages.dev/sitemap.xml
