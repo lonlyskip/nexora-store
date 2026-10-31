@@ -162,8 +162,3 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
 .bank-transfer-panel #bank-transfer-submit{margin-top:12px}
 
 
-/* Read-only storefront visitor counter */
-.visitor-counter{display:inline-flex;align-items:center;gap:7px;color:#888;font-size:11px;white-space:nowrap;direction:rtl}
-.visitor-counter>span{color:#ed5968;font-size:13px}
-.visitor-counter strong{color:#f3a0a8;font-variant-numeric:tabular-nums;font-size:12px}
-@media(max-width:480px){footer{gap:10px;flex-wrap:wrap}.visitor-counter{font-size:10px}}
